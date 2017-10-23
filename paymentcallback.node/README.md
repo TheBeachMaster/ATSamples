@@ -1,6 +1,6 @@
 ## ABOUT 
 --- 
-This a simple payments callback url written in Javascript. 
+This a simple payments callback url written in Javascript. That can be run locally for testing
 
 ### Setting up and Running 
 + Set up Node.JS as detailed [here](https://nodejs.org/en/download/package-manager/) 
