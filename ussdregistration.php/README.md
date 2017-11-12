@@ -71,9 +71,9 @@ if(!empty($_POST)){
 ```
 Require all the necessary scripts to run this application
 ```PHP
-	require_once('dbConnector.php');
-	require_once('AfricasTalkingGateway.php');
-	require_once('config.php');
+	require_once('conf/dbconfig.php');
+	require_once('libs/AfricasTalkingGateway.php');
+	require_once('conf/accountconfig.php');
 ```	
 
 Receive the HTTP POST from AT
@@ -138,7 +138,7 @@ switch ($userResponse) {
         	$db->query($sql9b);
 
         	//Serve our services menu
-			$response = "CON Karibu " . $userAvail['username']  . ". Please choose a service.\n";
+			$response = "CON Karibu " . $userAvailable['username']  . ". Please choose a service.\n";
 			$response .= " 1. Send me todays voice tip.\n";
 			$response .= " 2. Please call me!\n";
 			$response .= " 3. Send me Airtime!\n";
