@@ -3,7 +3,7 @@
 if(!empty($_POST)){
 	require_once('conf/dbconfig.php');
 	require_once('libs/AfricasTalkingGateway.php');
-	require_once('config/accountconfig.php');
+	require_once('conf/accountconfig.php');
 
 	//2. receive the POST from AT
 	$sessionId=$_POST['sessionId'];
@@ -73,7 +73,7 @@ if(!empty($_POST)){
 			          	$response = "END Please wait while we place your call.\n";
 
 			          	//Make a call
-			         	$from="+254724587654"; $to=$phoneNumber;
+			         	$from="+254724545678"; $to=$phoneNumber;
 			          	// Create a new instance of our awesome gateway class
 			          	$gateway = new AfricasTalkingGateway($username, $apikey, $env);
 			          	try { $gateway->call($from, $to); }
