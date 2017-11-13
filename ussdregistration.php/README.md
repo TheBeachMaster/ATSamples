@@ -1,5 +1,12 @@
 # Setting Up a USSD with Registration
 
+#### Running locally 
+
+With a local installation of PHP, in this directory run the following command:
+```bash 
+php -S localhost:8016	
+```
+
 #### A step-by-step guide
 
 - Setting up the logic for USSD is easy with the [Africa's Talking API](docs.africastalking.com/ussd). This is a guide to how to use the
