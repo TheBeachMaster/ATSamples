@@ -1,5 +1,4 @@
-let africastalking = require('africastalking'),
-    bodyParser = require('body-parser'),
+let bodyParser = require('body-parser'),
     express = require('express'),
     app = express(),
     conf = require('./config');
@@ -7,7 +6,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 let gatewayoptions = {
     username: conf.username,
-    environment: conf.environment,
+    sandbox: conf.environment,
     apiKey: conf.apikey,
     format: "json"
 }
@@ -15,7 +14,7 @@ let paymentOptions = {
     product: conf.product_name,
     currencyCode: conf.currency
 }
-let Africastalking = africastalking(gatewayoptions);
+let Africastalking = require('africastalking')(gatewayoptions);
 
 // USSD Logic ...Could be anything..Could be something invoked from a website button-click event or some other app Logic
 app.post('/ussd', new Africastalking.USSD((params, next) => {
@@ -91,6 +90,6 @@ app.get('/', (req, res) => {
     res.send('I am Alive!');
 });
 
-app.listen(3008, function(server) {
-    console.log('App is alive on Port 3008!');
+app.listen(process.env.PORT || 3008, function(server) {
+    console.log('App is live');
 });
