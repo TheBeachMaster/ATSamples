@@ -79,7 +79,7 @@ app.post('/pay', (req, res) => {
         // Send User Message...
         opts.to = req.body['phoneNumber'];
         opts.message = `We have recived your payment of Ksh.${req.body['amount']}`;
-        sms.send(opts).then(success).catch(error);
+        sms.send(opts).then((success) => {}).catch((error) => { console.log(error) });
     } else {
         //Just log everything
         console.log(req.body);
