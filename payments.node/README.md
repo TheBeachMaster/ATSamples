@@ -3,17 +3,16 @@
 ### Running this sample 
 
 1. ```bash
-   $ npm i --save
-   ```
-
+   $ npm start
+   ``` 
 
    ```bash
-   $ npm start
+   $ npm i --save 
    ```
 
-   
 
-2. ```powershell
+3. To launch run the following commands 
+   ```powershell
    ngrok http 3008
    ```
 
@@ -23,6 +22,6 @@
    ngrok 3008
    ```
 
-3. Your callback urls are `~/pay` for payments and `~/ussd` for ussd 
+4. Your callback urls are `<url>/pay` for payments and `<url>/ussd` for ussd 
 
-4. In the `config.js` , add Africa's Talking credentials
+5. In the `config.js` , add Africa's Talking credentials
