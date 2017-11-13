@@ -6,11 +6,11 @@
 code provided on this [repository](https://github.com/JaniKibichi/ussd-app-with-registration) to create a USSD that allows users to get registered and then access a menu of services.
 
 ## Prerequisites
-- First, create a config.php file in your root directory and fill in your Africa's Talking API credentials as below.
+- First, create a `accountconfig.php` file in your root directory and fill in your Africa's Talking API credentials as below.
 
 ```PHP
 <?php
-//This is the config.php file
+//This is the accountconfig.php file
 
 // Specify your login credentials
 $username   = "yourUsername";
@@ -27,7 +27,7 @@ $apikey     = "yourAPIKey";
 (Create your own which will be different.)
 
 - The webhook or callback to this application therefore becomes: 
-https://b11cd817.ngrok.io/RegUSSD/RegistrationUSSD.php. 
+https://b11cd817.ngrok.io/app.php. 
 To allow the application to talk to the Africa's Talking USSD gateway, this callback URL is placed in the dashboard, [under ussd callbacks here](https://account.africastalking.com/ussd/callback).
 
 - Finally, this application works with a connection to a MYSQL database. Create a database with a name, username and password of your choice. Also create a session_levels table and a users table. These details are configured in the dbConnector.php and this is required in the main application script RegistrationUSSD.php.
@@ -62,7 +62,7 @@ This USSD application has the following user journey.
 - In case the user is not registered, the application prompts the user for their name and city (with validations), before successfully serving the services menu.
 
 ## Code walkthrough
-This documentation is for the USSD application that lives in https://b11cd817.ngrok.io/RegUSSD/RegistrationUSSD.php.
+This documentation is for the USSD application that lives in https://b11cd817.ngrok.io/app.php.
 
 ```PHP
 <?php
@@ -339,7 +339,7 @@ switch ($level) {
 - The voice service included in this script requires a few juggling acts and probably requires a short review of its own.
 When the user requests a to get a call, the following happens.
 
-a) The script at https://b11cd817.ngrok.io/RegUSSD/RegistrationUSSD.php requests the call() method through the Africa's Talking Voice Gateway, passing the number to be called and the caller/dialer Id. The call is made and it comes into the users phone. When they answer isActive becomes 1.
+a) The script at https://b11cd817.ngrok.io/app.php requests the call() method through the Africa's Talking Voice Gateway, passing the number to be called and the caller/dialer Id. The call is made and it comes into the users phone. When they answer isActive becomes 1.
 
 ```PHP
 	case "2":
@@ -361,7 +361,7 @@ a) The script at https://b11cd817.ngrok.io/RegUSSD/RegistrationUSSD.php requests
     break;
 ```			        
 b) As a result, Africa's Talking gateway check the callback for the voice number in this case +254711082300.
-c) The callback is a script we have created in the root folder of this application voiceCall.php whose URL is: 	https://b11cd817.ngrok.io/RegUSSD/voiceCall.php
+c) The callback is a script we have created in the root folder of this application voiceCall.php whose URL is: 	https://b11cd817.ngrok.io/voiceCall.php
 
 d) The instructions are to respond with a text to speech message for the user to enter dtmf digits.
 
@@ -404,7 +404,7 @@ if ($isActive == 1)  {
 ```
 e) When the user enters the digit - in this case 0, 1 or 2, this digit is submitted to another script also at the root folder voiceMenu.php. 
 
-This script - in our case- lives at https://b11cd817.ngrok.io/RegUSSD/voiceMenu.php and which switches between the various dtmf digits to make an outgoing call to the right recipient, who will be bridged to speak to the person currently listening to music on hold. 
+This script - in our case- lives at https://b11cd817.ngrok.io/voiceMenu.php and which switches between the various dtmf digits to make an outgoing call to the right recipient, who will be bridged to speak to the person currently listening to music on hold. 
 
 We specify this music with the ringtone flag as follows: ringbackTone="http://62.12.117.25:8010/media/SautiFinaleMoney.mp3"
 
