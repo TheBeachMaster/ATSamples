@@ -19,7 +19,7 @@
    or
 
    ```bash
-   ngrok 3008
+   $ ngrok http 3008
    ```
 
 4. Your callback urls are `<url>/pay` for payments and `<url>/ussd` for ussd 
