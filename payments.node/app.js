@@ -6,7 +6,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 let gatewayoptions = {
     username: conf.username,
-    sandbox: conf.environment,
     apiKey: conf.apikey,
     format: "json"
 }
