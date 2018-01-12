@@ -13,7 +13,7 @@
     $bulkSMSMode = 0;
     $options = array('keyword'=> $keyword,'linkId'=> $linkId, 'retryDurationInHours' => "12");
     $message = "Get your daily message and thats how we roll.";
-    $gateway    = new AfricasTalkingGateway($username, $apikey, $env);
+    $gateway    = new AfricasTalkingGateway($username, $apikey);
     try 
     { 
     $results = $gateway->sendMessage($recipient, $message, $shortCode, $bulkSMSMode, $options);

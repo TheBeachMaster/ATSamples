@@ -35,7 +35,7 @@ if(!empty($_POST)){
 		//9. Serve the Services Menu
 			//9a. Check that the user actually typed something, else demote level and start at home
 			switch ($userResponse) {
-			    case "":
+			    case "": #384*1800#
 			        if($level==0){
 			        	//9b. Graduate user to next level & Serve Main Menu
 			        	$sql9b = "INSERT INTO `session_levels`(`session_id`,`phoneNumber`,`level`) VALUES('".$sessionId."','".$phoneNumber."',1)";
@@ -50,7 +50,7 @@ if(!empty($_POST)){
  			  			echo $response;						
 			        }
 			        break;
-			    case "1":
+			    case "1": #*384*1800*1#
 			        if($level==1){
 			        	//9c. Send the user todays voice tip via AT SMS API
 			        	$response = "END Please check your SMS inbox.\n";
@@ -58,7 +58,7 @@ if(!empty($_POST)){
 						$code = '44005';
             			$recipients = $phoneNumber;
             			$message    = "https://hahahah12-grahamingokho.c9.io/kaka.mp3";
-            			$gateway    = new AfricasTalkingGateway($username, $apikey, $env);
+            			$gateway    = new AfricasTalkingGateway($username, $apikey);
             			try { $results = $gateway->sendMessage($recipients, $message, $code); }
             			catch ( AfricasTalkingGatewayException $e ) {echo "Encountered an error while sending: ".$e->getMessage(); }
 
@@ -67,7 +67,7 @@ if(!empty($_POST)){
  			  			echo $response;	            						        	
 			        }
 			        break;
-			    case "2":
+			    case "2":  #*384*1800*2#
 			        if($level==1){
 			        	//9d. Call the user and bridge to a sales person
 			          	$response = "END Please wait while we place your call.\n";
@@ -75,7 +75,7 @@ if(!empty($_POST)){
 			          	//Make a call
 			         	$from="+254724545678"; $to=$phoneNumber;
 			          	// Create a new instance of our awesome gateway class
-			          	$gateway = new AfricasTalkingGateway($username, $apikey, $env);
+			          	$gateway = new AfricasTalkingGateway($username, $apikey);
 			          	try { $gateway->call($from, $to); }
 			          	catch ( AfricasTalkingGatewayException $e ){echo "Encountered an error when calling: ".$e->getMessage();}
 
@@ -84,7 +84,7 @@ if(!empty($_POST)){
  			  			echo $response;	 
 			        }
 			        break;
-			    case "3":
+			    case "3":  #*384*1800*3#
 			    	if($level==1){
 			    		//9e. Send user airtime
 						$response = "END Please wait while we load your account.\n";
@@ -94,7 +94,7 @@ if(!empty($_POST)){
 						//JSON encode
 						$recipientStringFormat = json_encode($recipients);
 						//Create an instance of our gateway class, pass your credentials
-						$gateway = new AfricasTalkingGateway($username, $apikey, $env);    
+						$gateway = new AfricasTalkingGateway($username, $apikey);    
 						try { $results = $gateway->sendAirtime($recipientStringFormat);}
 						catch(AfricasTalkingGatewayException $e){ echo $e->getMessage(); }
 

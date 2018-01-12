@@ -23,7 +23,7 @@ if(!empty($_POST)){
     $response = "END Please check your SMS inbox.\n";
     $recipients = $phoneNumber;
     $message    = "https://hahahah12-grahamingokho.c9.io/kaka.mp3";
-    $gateway    = new AfricasTalkingGateway($username, $apikey, $env);
+    $gateway    = new AfricasTalkingGateway($username, $apikey);
     try { $results = $gateway->sendMessage($recipients, $message, $code); }
     catch ( AfricasTalkingGatewayException $e ) {echo "Encountered an error while sending: ".$e->getMessage(); }
       header('Content-type: text/plain');
@@ -32,7 +32,7 @@ if(!empty($_POST)){
     else if($text == "2") {
         $response = "END Please wait while we place your call.\n";
        $from="+254724545678"; $to=$phoneNumber;
-        $gateway = new AfricasTalkingGateway($username, $apikey, $env);
+        $gateway = new AfricasTalkingGateway($username, $apikey);
         try { $gateway->call($from, $to); }
         catch ( AfricasTalkingGatewayException $e ){echo "Encountered an error when calling: ".$e->getMessage();}
         header('Content-type: text/plain');
@@ -50,7 +50,7 @@ if(!empty($_POST)){
         $response = "END Please wait while we load your account.\n";
         $recipients = array( array("phoneNumber"=>"".$phoneNumber."", "amount"=>"KES 10") );
         $recipientStringFormat = json_encode($recipients);
-        $gateway = new AfricasTalkingGateway($username, $apikey, $env);    
+        $gateway = new AfricasTalkingGateway($username, $apikey);    
         try { $results = $gateway->sendAirtime($recipientStringFormat);}
         catch(AfricasTalkingGatewayException $e){ echo $e->getMessage(); }
           header('Content-type: text/plain');
@@ -60,7 +60,7 @@ if(!empty($_POST)){
         $response = "END Please wait while we load your account.\n";
         $recipients = array( array("phoneNumber"=>"".$phoneNumber."", "amount"=>"KES 20") );
         $recipientStringFormat = json_encode($recipients);
-        $gateway = new AfricasTalkingGateway($username, $apikey, $env);    
+        $gateway = new AfricasTalkingGateway($username, $apikey);    
         try { $results = $gateway->sendAirtime($recipientStringFormat);}
         catch(AfricasTalkingGatewayException $e){ echo $e->getMessage(); }
           header('Content-type: text/plain');
@@ -70,7 +70,7 @@ if(!empty($_POST)){
         $response = "END Please check your SMS inbox.\n";
         $recipients = $phoneNumber;
         $message    = "LOL.\n No Airtime for you";
-        $gateway    = new AfricasTalkingGateway($username, $apikey, $env);
+        $gateway    = new AfricasTalkingGateway($username, $apikey);
         try { $results = $gateway->sendMessage($recipients, $message, $code); }
         catch ( AfricasTalkingGatewayException $e ) {echo "Encountered an error while sending: ".$e->getMessage(); }
         header('Content-type: text/plain');

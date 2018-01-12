@@ -35,12 +35,16 @@ class AfricasTalkingGateway
   const HTTP_CODE_OK      = 200;
   const HTTP_CODE_CREATED = 201;
   
-  public function __construct($username_, $apiKey_, $environment_ = "production")
+  public function __construct($username_, $apiKey_)
   {
     $this->_username     = $username_;
     $this->_apiKey       = $apiKey_;
 
-    $this->_environment  = $environment_;
+    if ($username_ === 'sandbox') {
+      $this->_environment  = 'sandbox';
+    } else {
+      $this->_environment  = 'production';
+    }
     
     $this->_requestBody  = null;
     $this->_requestUrl   = null;
@@ -58,10 +62,10 @@ class AfricasTalkingGateway
     }
     
     $params = array(
-        'username' => $this->_username,
-        'to'       => $to_,
-        'message'  => $message_,
-        );
+		    'username' => $this->_username,
+		    'to'       => $to_,
+		    'message'  => $message_,
+		    );
     
     if ( $from_ !== null ) {
       $params['from']        = $from_;
@@ -71,19 +75,19 @@ class AfricasTalkingGateway
     //This contains a list of parameters that can be passed in $options_ parameter
     if ( count($options_) > 0 ) {
       $allowedKeys = array (
-          'enqueue',
-          'keyword',
-          'linkId',
-          'retryDurationInHours'
-          );
-          
+			    'enqueue',
+			    'keyword',
+			    'linkId',
+			    'retryDurationInHours'
+			    );
+			    
       //Check whether data has been passed in options_ parameter
       foreach ( $options_ as $key => $value ) {
-  if ( in_array($key, $allowedKeys) && strlen($value) > 0 ) {
-    $params[$key] = $value;
-  } else {
-    throw new AfricasTalkingGatewayException("Invalid key in options array: [$key]");
-  }
+	if ( in_array($key, $allowedKeys) && strlen($value) > 0 ) {
+	  $params[$key] = $value;
+	} else {
+	  throw new AfricasTalkingGatewayException("Invalid key in options array: [$key]");
+	}
       }
     }
     
@@ -95,8 +99,8 @@ class AfricasTalkingGateway
     if ( $this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED ) {
       $responseObject = json_decode($this->_responseBody);
       if(count($responseObject->SMSMessageData->Recipients) > 0)
-  return $responseObject->SMSMessageData->Recipients;
-    
+	return $responseObject->SMSMessageData->Recipients;
+	  
       throw new AfricasTalkingGatewayException($responseObject->SMSMessageData->Message);
     }
     
@@ -121,19 +125,20 @@ class AfricasTalkingGateway
   
   
   //Subscription methods
-  public function createSubscription($phoneNumber_, $shortCode_, $keyword_)
+  public function createSubscription($phoneNumber_, $shortCode_, $keyword_, $checkoutToken_)
   {
-    
-    if ( strlen($phoneNumber_) == 0 || strlen($shortCode_) == 0 || strlen($keyword_) == 0 ) {
-      throw new AfricasTalkingGatewayException('Please supply phoneNumber, shortCode and keyword');
+  	
+    if ( strlen($phoneNumber_) == 0 || strlen($shortCode_) == 0 || strlen($keyword_) == 0 || strlen($checkoutToken_) == 0 ) {
+      throw new AfricasTalkingGatewayException('Please supply phoneNumber, shortCode, keyword and checkoutToken');
     }
     
     $params = array(
-        'username'    => $this->_username,
-        'phoneNumber' => $phoneNumber_,
-        'shortCode'   => $shortCode_,
-        'keyword'     => $keyword_
-        );
+		    'username'      => $this->_username,
+		    'phoneNumber'   => $phoneNumber_,
+		    'shortCode'     => $shortCode_,
+		    'keyword'       => $keyword_,
+        'checkoutToken' => $checkoutToken_,
+		    );
     
     $this->_requestUrl  = $this->getSubscriptionUrl("/create");
     $this->_requestBody = http_build_query($params, '', '&');
@@ -153,11 +158,11 @@ class AfricasTalkingGateway
     }
     
     $params = array(
-        'username'    => $this->_username,
-        'phoneNumber' => $phoneNumber_,
-        'shortCode'   => $shortCode_,
-        'keyword'     => $keyword_
-        );
+		    'username'    => $this->_username,
+		    'phoneNumber' => $phoneNumber_,
+		    'shortCode'   => $shortCode_,
+		    'keyword'     => $keyword_
+		    );
     
     $this->_requestUrl  = $this->getSubscriptionUrl("/delete");
     $this->_requestBody = http_build_query($params, '', '&');
@@ -196,10 +201,10 @@ class AfricasTalkingGateway
     }
     
     $params = array(
-        'username' => $this->_username,
-        'from'     => $from_,
-        'to'       => $to_
-        );
+		    'username' => $this->_username,
+		    'from'     => $from_,
+		    'to'       => $to_
+		    );
     
     $this->_requestUrl  = $this->getVoiceUrl() . "/call";
     $this->_requestBody = http_build_query($params, '', '&');
@@ -208,7 +213,7 @@ class AfricasTalkingGateway
      
     if(($responseObject = json_decode($this->_responseBody)) !== null) {
       if(strtoupper(trim($responseObject->errorMessage)) == "NONE") {
-  return $responseObject->entries;
+	return $responseObject->entries;
       }
       throw new AfricasTalkingGatewayException($responseObject->errorMessage);
     }
@@ -217,45 +222,39 @@ class AfricasTalkingGateway
   }
   
   public function getNumQueuedCalls($phoneNumber_, $queueName = null) 
-  {   
+  {  	
     $this->_requestUrl = $this->getVoiceUrl() . "/queueStatus";
     $params = array(
-        "username"     => $this->_username, 
-        "phoneNumbers" => $phoneNumber_
-        );
+		    "username"     => $this->_username, 
+		    "phoneNumbers" => $phoneNumber_
+		    );
     if($queueName !== null)
       $params['queueName'] = $queueName;
     $this->_requestBody   = http_build_query($params, '', '&');
     $this->executePOST();
-    
+  	
     if(($responseObject = json_decode($this->_responseBody)) !== null) {
       if(strtoupper(trim($responseObject->errorMessage)) == "NONE")
-  return $responseObject->entries;
+	return $responseObject->entries;
       throw new AfricasTalkingGatewayException($responseObject->ErrorMessage);
     }
-      
+  		
     throw new AfricasTalkingGatewayException($this->_responseBody);
   }
 
-    
-  public function uploadMediaFile($url_) 
+		
+  public function uploadMediaFile($url_, $phoneNumber_) 
   {
     $params = array(
-        "username" => $this->_username, 
-        "url"      => $url_
-        );
-                 
+		    "username"    => $this->_username, 
+		    "url"         => $url_,
+        "phoneNumber" => $phoneNumber_
+		    );
+  	             
     $this->_requestBody = http_build_query($params, '', '&');
     $this->_requestUrl  = $this->getVoiceUrl() . "/mediaUpload";
-    
+  	
     $this->executePOST();
-    
-    if(($responseObject = json_decode($this->_responseBody)) !== null) {
-      if(strtoupper(trim($responseObject->errorMessage)) != "NONE")
-  throw new AfricasTalkingGatewayException($responseObject->errorMessage);
-    }
-    else
-      throw new AfricasTalkingGatewayException($this->_responseBody);
   }
   
   
@@ -263,37 +262,165 @@ class AfricasTalkingGateway
   public function sendAirtime($recipients) 
   {
     $params = array(
-        "username"    => $this->_username, 
-        "recipients"  => $recipients
-        );
+		    "username"    => $this->_username, 
+		    "recipients"  => $recipients
+		    );
     $this->_requestUrl  = $this->getAirtimeUrl("/send");
     $this->_requestBody = http_build_query($params, '', '&');
-    
+  	
     $this->executePOST();
-    
+  	
     if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
       $responseObject = json_decode($this->_responseBody);
       if(count($responseObject->responses) > 0)
-  return $responseObject->responses;
-        
+	return $responseObject->responses;
+  			
       throw new AfricasTalkingGatewayException($responseObject->errorMessage);
     }
-    
+  	
     throw new AfricasTalkingGatewayException($this->_responseBody);
   }
 
   // Payments
-  public function initiateMobilePaymentCheckout($productName_,
-            $phoneNumber_,
-            $currencyCode_,
-            $amount_,
-            $metadata_) {
+  public function bankPaymentCheckoutCharge($productName_,
+					    $bankAccount_,
+					    $currencyCode_,
+					    $amount_,
+					    $narration_,
+					    $metadata_) {
     $this->_requestBody = json_encode(array("username"     => $this->_username,
-              "productName"  => $productName_,
-              "phoneNumber"  => $phoneNumber_,
-              "currencyCode" => $currencyCode_,
-              "amount"       => $amount_,
-              "metadata"     => $metadata_));
+					    "productName"  => $productName_,
+					    "bankAccount"  => $bankAccount_,
+					    "currencyCode" => $currencyCode_,
+					    "amount"       => $amount_,
+					    "narration"    => $narration_,
+					    "metadata"     => $metadata_));
+    $this->_requestUrl  = $this->getBankPaymentCheckoutChargeUrl();
+    
+    $this->executeJsonPOST();
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "PendingValidation") return $response->transactionId;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+  }
+
+  public function bankPaymentCheckoutValidation($transactionId_,
+						$otp_) {
+    $this->_requestBody = json_encode(array("username"      => $this->_username,
+					    "transactionId" => $transactionId_,
+					    "otp"           => $otp_));
+    
+    $this->_requestUrl  = $this->getBankPaymentCheckoutValidationUrl();
+    
+    $this->executeJsonPOST();
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "Success") return;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+
+  }
+
+  public function bankPaymentTransfer($productName_,
+				      $recipients_) {
+    $this->_requestBody = json_encode(array("username"    => $this->_username,
+					    "productName" => $productName_,
+					    "recipients"  => $recipients_));
+    $this->_requestUrl  = $this->getBankPaymentTransferUrl();
+    
+    $this->executeJsonPOST();
+
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "Success") return $response->transactionId;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+  }
+
+
+  public function cardPaymentCheckoutCharge($productName_,
+					    $paymentCard_,
+					    $currencyCode_,
+					    $amount_,
+					    $narration_,
+					    $metadata_) {
+    
+    $this->_requestBody = json_encode(array("username"     => $this->_username,
+					    "productName"  => $productName_,
+					    "paymentCard"  => $paymentCard_,
+					    "currencyCode" => $currencyCode_,
+					    "amount"       => $amount_,
+					    "narration"    => $narration_,
+					    "metadata"     => $metadata_));
+    $this->_requestUrl  = $this->getCardPaymentCheckoutChargeUrl();
+    
+    $this->executeJsonPOST();
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "PendingValidation") return $response->transactionId;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+  }
+
+  public function cardPaymentCheckoutChargeWithToken($productName_,
+						     $checkoutToken_,
+						     $currencyCode_,
+						     $amount_,
+						     $narration_,
+						     $metadata_) {
+    $this->_requestBody = json_encode(array("username"      => $this->_username,
+					    "productName"   => $productName_,
+					    "checkoutToken" => $checkoutToken_,
+					    "currencyCode"  => $currencyCode_,
+					    "amount"        => $amount_,
+					    "narration"     => $narration_,
+					    "metadata"      => $metadata_));
+    $this->_requestUrl  = $this->getCardPaymentCheckoutChargeUrl();
+    
+    $this->executeJsonPOST();
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "Success") return $response->transactionId;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+  }
+  
+  public function cardPaymentCheckoutValidation($transactionId_,
+						$otp_) {
+    $this->_requestBody = json_encode(array("username"      => $this->_username,
+					    "transactionId" => $transactionId_,
+					    "otp"           => $otp_));
+    
+    $this->_requestUrl  = $this->getCardPaymentCheckoutValidationUrl();
+    
+    $this->executeJsonPOST();
+    if($this->_responseInfo['http_code'] == self::HTTP_CODE_CREATED) {
+      $response = json_decode($this->_responseBody);
+      if ( $response->status == "Success") return $response->checkoutToken;
+      else throw new AfricasTalkingGatewayException($response->description);
+    }
+    throw new AfricasTalkingGatewayException($this->_responseBody);
+
+  }
+
+  
+  public function initiateMobilePaymentCheckout($productName_,
+						$phoneNumber_,
+						$currencyCode_,
+						$amount_,
+						$metadata_) {
+    $this->_requestBody = json_encode(array("username"     => $this->_username,
+					    "productName"  => $productName_,
+					    "phoneNumber"  => $phoneNumber_,
+					    "currencyCode" => $currencyCode_,
+					    "amount"       => $amount_,
+					    "metadata"     => $metadata_));
     $this->_requestUrl  = $this->getMobilePaymentCheckoutUrl();
     
     $this->executeJsonPOST();
@@ -306,10 +433,10 @@ class AfricasTalkingGateway
   }
 
   public function mobilePaymentB2CRequest($productName_,
-            $recipients_) {
+					  $recipients_) {
     $this->_requestBody = json_encode(array("username"     => $this->_username,
-              "productName"  => $productName_,
-              "recipients"   => $recipients_));
+					    "productName"  => $productName_,
+					    "recipients"   => $recipients_));
     $this->_requestUrl  = $this->getMobilePaymentB2CUrl();
     
     $this->executeJsonPOST();
@@ -323,28 +450,28 @@ class AfricasTalkingGateway
   }
 
   public function mobilePaymentB2BRequest($productName_, $providerData_, $currencyCode_, $amount_, $metadata_) {
-    if(!isset($providerData_['provider']) || strlen($providerData_['provider']) == 0)
-      throw new AfricasTalkingGatewayException("Missing field provider");
-    
-    if(!isset($providerData_['destinationChannel']) || strlen($providerData_['destinationChannel']) == 0)
-      throw new AfricasTalkingGatewayException("Missing field destinationChannel");
+		if(!isset($providerData_['provider']) || strlen($providerData_['provider']) == 0)
+			throw new AfricasTalkingGatewayException("Missing field provider");
+		
+		if(!isset($providerData_['destinationChannel']) || strlen($providerData_['destinationChannel']) == 0)
+			throw new AfricasTalkingGatewayException("Missing field destinationChannel");
 
     if(!isset($providerData_['destinationAccount']) || strlen($providerData_['destinationAccount']) == 0)
       throw new AfricasTalkingGatewayException("Missing field destinationAccount");
-    
-    if(!isset($providerData_['transferType']) || strlen($providerData_['transferType']) == 0)
-      throw new AfricasTalkingGatewayException("Missing field transferType");
-    
-    $params = array("username" => $this->_username,
-                    "productName"  => $productName_,
-                    "currencyCode" => $currencyCode_,
-                    "amount"=>$amount_,
-                    'provider' => $providerData_['provider'],
-                    'destinationChannel' => $providerData_['destinationChannel'],
+		
+		if(!isset($providerData_['transferType']) || strlen($providerData_['transferType']) == 0)
+			throw new AfricasTalkingGatewayException("Missing field transferType");
+		
+		$params = array("username" => $this->_username,
+										"productName"  => $productName_,
+										"currencyCode" => $currencyCode_,
+										"amount"=>$amount_,
+										'provider' => $providerData_['provider'],
+										'destinationChannel' => $providerData_['destinationChannel'],
                     'destinationAccount' => $providerData_['destinationAccount'],
-                    'transferType' => $providerData_['transferType'],
-                    'metadata' => $metadata_);
-    
+										'transferType' => $providerData_['transferType'],
+										'metadata' => $metadata_);
+		
     $this->_requestBody = json_encode($params);
     $this->_requestUrl  = $this->getMobilePaymentB2BUrl();
     
@@ -367,7 +494,7 @@ class AfricasTalkingGateway
       $responseObject = json_decode($this->_responseBody);
       return $responseObject->UserData;
     }
-      
+    	
     throw new AfricasTalkingGatewayException($this->_responseBody);
   }
   
@@ -375,7 +502,7 @@ class AfricasTalkingGateway
   {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Accept: application/json',
-               'apikey: ' . $this->_apiKey));
+							 'apikey: ' . $this->_apiKey));
     $this->doExecute($ch);
   }
   
@@ -385,7 +512,7 @@ class AfricasTalkingGateway
     curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_requestBody);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Accept: application/json',
-               'apikey: ' . $this->_apiKey));
+							 'apikey: ' . $this->_apiKey));
     
     $this->doExecute($ch);
   }
@@ -397,28 +524,28 @@ class AfricasTalkingGateway
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
     curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_requestBody);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
-                 'Content-Length: ' . strlen($this->_requestBody),
-                 'apikey: ' . $this->_apiKey));
+					       'Content-Length: ' . strlen($this->_requestBody),
+					       'apikey: ' . $this->_apiKey));
     $this->doExecute($ch);
   }
   
   private function doExecute (&$curlHandle_)
   {
     try {
-      
+	   	
       $this->setCurlOpts($curlHandle_);
       $responseBody = curl_exec($curlHandle_);
-          
+			    
       if ( self::Debug ) {
-  echo "Full response: ". print_r($responseBody, true)."\n";
+	echo "Full response: ". print_r($responseBody, true)."\n";
       }
-          
+			    
       $this->_responseInfo = curl_getinfo($curlHandle_);
-          
+			    
       $this->_responseBody = $responseBody;
       curl_close($curlHandle_);
     }
-     
+	   
     catch(Exeption $e) {
       curl_close($curlHandle_);
       throw $e;
@@ -465,6 +592,26 @@ class AfricasTalkingGateway
     return $this->getApiHost().'/version1/airtime'.$extension_;
   }
 
+  private function getBankPaymentCheckoutChargeUrl() {
+    return $this->getPaymentHost().'/bank/checkout/charge';
+  }
+
+  private function getBankPaymentCheckoutValidationUrl() {
+    return $this->getPaymentHost().'/bank/checkout/validate';
+  }
+
+  private function getBankPaymentTransferUrl() {
+    return $this->getPaymentHost().'/bank/transfer';
+  }
+
+  private function getCardPaymentCheckoutChargeUrl() {
+    return $this->getPaymentHost().'/card/checkout/charge';
+  }
+  
+  private function getCardPaymentCheckoutValidationUrl() {
+    return $this->getPaymentHost().'/card/checkout/validate';
+  }
+  
   private function getMobilePaymentCheckoutUrl() {
     return $this->getPaymentHost().'/mobile/checkout/request';
   }
