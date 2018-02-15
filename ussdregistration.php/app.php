@@ -9,6 +9,7 @@ if(!empty($_POST)){
 	$sessionId=$_POST['sessionId'];
 	$serviceCode=$_POST['serviceCode'];
 	$phoneNumber=$_POST['phoneNumber'];
+	$networkCode=$_POST['networkCode'];
 	$text=$_POST['text'];
 
 	//3. Explode the text to get the value of the latest interaction - think 1*1
