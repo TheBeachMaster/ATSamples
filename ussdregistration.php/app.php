@@ -46,6 +46,7 @@ if(!empty($_POST)){
 						$response .= " 1. Send me todays voice tip.\n";
 						$response .= " 2. Please call me!\n";
 						$response .= " 3. Send me Airtime!\n";
+						$response .= " 4. Pay Ksh.1500\n";
 			  			// Print the response onto the page so that our gateway can read it
 			  			header('Content-type: text/plain');
  			  			echo $response;						
@@ -103,7 +104,22 @@ if(!empty($_POST)){
 			  			header('Content-type: text/plain');
  			  			echo $response;	 			    		
 			    	}
-			        break;			        
+					break;
+				case "4": #*384*1800*4#
+					if ($level==1) {
+						$response = "END You're about to pay ME Ksh.1500.\n";
+						$response .= "Press OK to continue.";
+						$product = "coolproduct";
+						$amount = 1500;
+						$currency = "KES";
+						$metadata = array('reason' => "awesomeness", 'source' =>"USSD app" );
+						try {$results = $gateway->initiateMobilePaymentCheckout($product,$phoneNumber,$currency,$amount,$metadata);}
+						catch(AfricasTalkingGatewayException $e){ echo $e->getMessage(); }
+
+						header('Content-type: text/plain');
+						echo $response;	
+					}
+					break;				        
 			    default:
 			    	if($level==1){
 				        // Return user to Main Menu & Demote user's level
