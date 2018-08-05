@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/TheBeachMaster/ATSamples#readme",
     "dependencies": {
-        "africastalking": "^0.1.0",
+        "africastalking": "^0.3.2",
         "body-parser": "^1.18.2",
         "express": "^4.16.2"
     }
